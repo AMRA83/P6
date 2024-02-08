@@ -141,6 +141,19 @@ body {
 	font-family: 'Work Sans';
 	font-size: 14px;
 	background-color: #FFFEF8;
+
+}
+
+.container__admin {
+	background-color: #000;
+	width: 100%;
+	height: 59px;
+	color: #fff;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	gap: 10px;
+
 }
 
 header {
@@ -180,7 +193,11 @@ nav ul {
 	display: flex;
 	align-items: center;
 	list-style-type: none;
+}
 
+nav ul a {
+	text-decoration: none;
+	color: black;
 }
 
 nav li {
@@ -222,6 +239,22 @@ li:hover {
 #portfolio h2 {
 	text-align: center;
 	margin-bottom: 1em;
+}
+
+.modification {
+	display: flex;
+	justify-content: center;
+}
+
+.modification_icon {
+	margin-left: 30px;
+	margin-top: 8px;
+	display: flex;
+	gap: 15px;
+}
+
+.icon_modif {
+	color: black;
 }
 
 .gallery {
@@ -279,7 +312,6 @@ li:hover {
 
 #contact>* {
 	text-align: center;
-
 }
 
 #contact h2 {
@@ -309,7 +341,7 @@ li:hover {
 	box-shadow: 0px 4px 14px rgba(0, 0, 0, 0.09);
 }
 
-input[type="submit"] {
+#sendContact input[type="submit"] {
 	font-family: 'Syne';
 	font-weight: 700;
 	color: white;
@@ -320,12 +352,81 @@ input[type="submit"] {
 	border-radius: 60px;
 }
 
-footer {
-	background-color: #FFFFFF;
-}
-
 footer nav ul {
 	display: flex;
 	justify-content: flex-end;
 	margin: 2em
+}
+
+footer nav li {
+	font-size: 14px;
+}
+
+/* Login*/
+.login {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	height: 80vh;
+
+}
+
+main {
+	background-color: #FFFEF8;
+}
+
+.login a {
+	text-decoration: underline;
+	margin-bottom: 100px;
+}
+
+
+
+.login__form {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	margin-top: 60px;
+}
+
+.login__form input {
+	height: 51px;
+	width: 379px;
+	box-shadow: 0px 4px 14px rgba(0, 0, 0, 0.09);
+	border: none;
+	background: #fff;
+}
+
+.login__form label {
+	margin: 3em 0 1em 0;
+}
+
+.login__form textarea {
+	box-shadow: 0px 4px 14px rgba(0, 0, 0, 0.09);
+}
+
+.login__form input[type="submit"] {
+	font-family: 'Syne';
+	font-weight: 700;
+	color: white;
+	background-color: #1D6154;
+	border: 2px solid #1D6154;
+	margin: 3em auto;
+	width: 179px;
+	height: 36px;
+	text-align: center;
+	border-radius: 60px;
+}
+
+.login__form input[type="submit"]:hover {
+	background-color: #0E2F28;
+}
+
+.loginMdp__error {
+	color: red;
+}
+
+.loginEmail__error {
+	color: red;
 }

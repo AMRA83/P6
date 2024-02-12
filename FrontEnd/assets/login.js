@@ -1,82 +1,117 @@
-const alredyLoggedError = document.querySelector(".alredyLogged__error");
-const loginEmailError = document.querySelector(".loginEmail__error");
-const loginMdpError = document.querySelector(".loginMdp__error");
+const form = document.querySelector(".loginForm");
+const loginPassword = document.getElementById('password');
+const loginEmail = document.getElementById('email');
+const errorPassword = document.getElementById('errorPassword');
+const errorEmail = document.getElementById('errorEmail');
 
-const email = document.getElementById("email");
-const password = document.getElementById("password");
 
-const submit = document.getElementById("submit");
 
-alredyLogged();
+form.addEventListener('submit', (event) => {
+    event.preventDefault();
+    formLogin();
+});
 
-// Si l'utilisateur est déjà connecté, on supprime le token
-function alredyLogged() {
-    if (localStorage.getItem("token")) {
-        localStorage.removeItem("token");
+/*Cette fonction effectue le fetch (la requête)*/
+async function fetchLogin(type, options) {
+    const url = 'http://localhost:5678/api/users/' + type;
+    try {
+        const reponse = await fetch(url, options);
+        const data = await reponse.json();
 
-        const p = document.createElement("p");
-        p.innerHTML = "Vous avez été déconnecté, veuillez vous reconnecter";
-        alredyLoggedError.appendChild(p);
-        return;
+        return data;
+
+    }
+    catch (error) {
+        return addError('request');
+    }
+}
+/*Initialise le fetch du login*/
+async function loginForm(user) {
+    const type = 'login';
+    const content = user;
+
+    const options = {
+        method: 'POST',
+        headers: {
+
+            'Content-Type': 'application/json'
+
+        },
+        body: JSON.stringify(content)
+    };
+
+    return fetchLogin(type, options);
+}
+
+
+/* Afficher les messages d'erreurs Email - PassWord */
+function addError(errorType) {
+    var type = errorType;
+    errorEmail.innerText = '';
+    errorPassword.innerText = '';
+    var errorText = '';
+    switch (type) {
+        case 'invalid_data':
+            errorText = document.createTextNode('Email ou password incorrect.');
+            errorEmail.appendChild(errorText);
+            break;
+        case 'invalid_email':
+            errorText = document.createTextNode('Email incorrecte veuillez réessayer.');
+            errorEmail.appendChild(errorText);
+            break;
+        case 'invalid_password':
+            errorText = document.createTextNode('Mot de passe incorrect. réessayez ou cliquez sur mot de passe oublié pour le réinitialiser.');
+            errorPassword.appendChild(errorText);
+            break;
+        case 'request':
+            errorText = document.createTextNode('Erreur lors de la requête veuillez réessayer ultérieurement.');
+            errorEmail.appendChild(errorText);
+            break;
+        case 'user_not_found':
+            errorText = document.createTextNode('Aucun utilisateur existe.');
+            errorEmail.appendChild(errorText);
+        default:
+            break;
     }
 }
 
-// Au clic, on envoie les valeurs de connexion
-submit.addEventListener("click", () => {
-    let user = {
-        email: email.value,
-        password: password.value
-    };
-    login(user);
-})
 
-// Fonction de connexion
-function login(id) {
-    console.log(id);
-    loginEmailError.innerHTML = "";
-    loginMdpError.innerHTML = "";
-    // véeification de l'email
-    if (!id.email.match(/^[a-zA-Z0-9._-]+@[a-zA-Z0-9._-]{2,}\.[a-z]{2,4}$/g)) {
-        const p = document.createElement("p");
-        p.innerHTML = "Veuillez entrer une addresse mail valide";
-        loginEmailError.appendChild(p);
-        return;
-    }
-    // vérifcation du mot de passe
-    if (id.password.length < 5 && !id.password.match(/^[a-zA-Z0-9]+$/g)) {
-        const p = document.createElement("p");
-        p.innerHTML = "Veuillez entrer un mot de passe valide";
-        loginMdpError.appendChild(p);
-        return;
+async function formLogin() {
+    const email = loginEmail.value;
+    const password = loginPassword.value;
+    /* Si l'email ou le password est différent alors on va envoyer un message d'erreur*/
+    if (!email || !password) return addError('invalid_data');
+    /*Si le password est inférieur a 6 alors il retourne un message d'erreur "invalid_password"*/
+    if (password.length < 6) return addError('invalid_password');
+    /**
+     * Si l'email est différent alors on va envoyer un message d'erreur.
+     * Grace à checkEmail va verifier que c'est bien un Email avec un @ et .com.
+    */
+    const validEmail = checkEmail(email);
+
+    if (!validEmail) {
+        return addError('invalid_email');
     }
 
+    const user = { email, password };
 
-    // verification de l'email et du mot de passe
-    fetch('http://localhost:5678/api/users/login', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json;charset=utf-8'
-        },
-        body: JSON.stringify(id)
-    })
-        .then(response => response.json())
-        .then(result => {
-            console.log(result);
-            // Si couple email/mdp incorrect
-            if (result.error || result.message) {
-                const p = document.createElement("p");
-                p.innerHTML = "La combinaison e-mail/mot de passe est incorrecte";
-                loginMdpError.appendChild(p);
+    try {
+        const req = await loginForm(user);
+        if (req.token) {
+            sessionStorage.setItem('token', req.token);
+            window.location.href = "index.html";
+        }
 
-                // Si couple email/mdp correct
-            } else if (result.token) {
-                localStorage.setItem("token", result.token);
-                window.location.href = "index.html";
-            }
+        if (req.message) return addError('user_not_found');
+    } catch (error) {
 
-        })
-        // prevenir l'utilisateur en cas d'erreur
+    }
+}
 
-        .catch(error =>
-            console.log(error));
+function checkEmail(email) {
+    var regexMail = /^[^\s@]+@[a-z]+\.[a-z]{2,}$/;
+    if (!regexMail.test(email)) {
+        return false;
+    }
+    return regexMail.test(email);
 }

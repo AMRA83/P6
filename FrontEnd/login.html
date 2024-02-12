@@ -29,29 +29,33 @@
             </ul>
         </nav>
     </header>
-
     <main>
-        <section class="login">
+        <section id="login" class="form">
             <h2>Log In</h2>
-            <div class="alredyLogged__error">
-            </div>
-            <form action="" method="" class="login__form" onsubmit="return false">
-                <label for="email">E-mail</label>
-                <input type="email" name="email" id="email" required>
-                <div class="loginEmail__error">
 
+            <form class="loginForm" method="post">
+                <div class="loginFormEmail">
+                    <label for="email">E-mail</label>
+
+                    <input type="email" id="email" name="email">
+
+                    <p id="errorEmail"></p>
                 </div>
-                <label for="password">Mot de passe</label>
-                <input type="password" name="password" id="password" required>
-                <div class="loginMdp__error">
+
+                <div class="loginFormEmail">
+                    <label for="password">Mot de passe</label>
+
+                    <input type="password" id="password" name="password">
+
+                    <p id="errorPassword"></p>
                 </div>
-                <input type="submit" value="Se connecter" id="submit">
+
+                <button>Se connecter</button>
+
+                <a href="#">Mot de passe oublié</a>
             </form>
-            <a href="">Mot de passe oublié</a>
         </section>
     </main>
-
-
 
     <footer>
         <nav>

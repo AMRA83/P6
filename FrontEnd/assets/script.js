@@ -97,3 +97,90 @@ function tabsFilter() {
 }
 
 filtre();
+
+
+
+/*Cette fonction va permettre de modifier le "login" et le "logout" ainsi que le bouton "modifier".*/
+function logOut() {
+    const containerAdmin = document.getElementById('admin')
+    const buttonModifier = document.querySelector('.modification_icon');
+    const login = document.getElementById('login');
+    const logout = document.getElementById('logout');
+    const token = sessionStorage.getItem('token');
+    const filtres = document.querySelector('.filtres');
+    /*Si nous avons le token alors on change le "login" en "logout" et nous pouvons afficher le button modifier*/
+    if (token) {
+        containerAdmin.classList.remove('hide');
+        login.classList.add('hide');
+        logout.classList.remove('hide');
+        buttonModifier.classList.remove('hide');
+        filtres.classList.add('hide')
+
+        /*Si nous cliquons sur le bouton logout alors on enlève le token on change le "logout" en "login" et on enlève le bouton modifier */
+        logout.addEventListener('click', () => {
+            containerAdmin.classList.add('hide');
+            sessionStorage.removeItem('token');
+            login.classList.remove('hide');
+            logout.classList.add('hide');
+            buttonModifier.classList.add('hide');
+            filtre();
+
+        })
+    }
+
+}
+logOut();
+
+
+/*MODAL*/
+
+const buttonOpenModal = document.querySelector('.modification_icon');
+const modaleContainer = document.querySelector('.modale_container');
+const buttonCloseModal = document.getElementById('close_modale')
+
+/*Bouton pour ouvrir le modal*/
+buttonOpenModal.addEventListener("click", function () {
+    modaleContainer.classList.remove('hide')
+});
+
+/*Bouton pour fermer le modal*/
+buttonCloseModal.addEventListener("click", function () {
+    modaleContainer.classList.add('hide')
+});
+
+const modalGallery = document.querySelector('.modal_gallery')
+
+/* Ajout des images dans la modale* en recuperant la fonction getWorks*/
+
+async function addWorksModale() {
+    const images = await getWorks();
+
+    images.forEach(image => {
+        const img = document.createElement('img');
+        img.src = image.imageUrl;
+        img.alt = image.title;
+        const ImageModal = document.createElement('div');
+        img.classList.add('image_modal');
+        ImageModal.classList.add('position_image');
+        ImageModal.dataset.id = image.id;
+        ImageModal.appendChild(img);
+        const iconDelete = document.createElement("img");
+        iconDelete.src = "./assets/icons/delete_icon.jpg";
+        iconDelete.classList.add('icon_delete');
+        modalGallery.appendChild(ImageModal);
+        ImageModal.appendChild(iconDelete);
+
+    });
+}
+addWorksModale()
+/*Pour supprimer une image de la modale*/
+const iconsDelete = document.querySelectorAll('.icon_delete');
+iconsDelete.forEach(iconDelete => {
+
+    iconDelete.addEventListener('click', () => {
+        let dataId = iconDelete.parentNode.dataset.id;
+        console.log(dataId);
+        deleteWork(dataId);
+    });
+});
+

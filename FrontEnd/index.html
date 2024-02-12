@@ -10,23 +10,46 @@
 	<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Work+Sans&display=swap"
 		rel="stylesheet">
 	<meta name="description" content="">
+
 	<script src="https://kit.fontawesome.com/bae1f4e250.js" crossorigin="anonymous"></script>
 	<link rel="stylesheet" href="./assets/style/style.css">
-	<link rel="stylesheet" href="./assets/style/fontawesome-free-6.5.1-web/">
+
 </head>
+<div class="container__admin hide" id="admin">
+	<i class="far fa-light fa-pen-to-square" style="color: white;"></i>
+	<p>Mode édition</p>
+</div>
 
 <body>
-	<div class="container__admin hide">
-		<i class="far fa-light fa-pen-to-square" style="color: white;"></i>
-		<p>Mode édition</p>
+	<div class="modale_container hide">
+		<div class="modale_overlay">
+
+		</div>
+
+		<dialog>
+			<div class="icon_close_position" id="close_modale">
+
+				<a href="#"><i class="far fa-solid fa-x" style="color: black;"></i></a>
+			</div>
+
+			<p class="galerie_photo">Galerie photo</p>
+
+			<div class="modal_gallery">
+			</div>
+			<div class="line"></div>
+			<button class="modal_button">Ajouter une photo</button>
+
+		</dialog>
 	</div>
+
 	<header>
 		<h1>Sophie Bluel <span>Architecte d'intérieur</span></h1>
 		<nav>
 			<ul>
 				<li>projets</li>
 				<li>contact</li>
-				<li>login</li>
+				<li id="login">login</li>
+				<li id="logout">logout</li>
 				<li><img src="./assets/icons/instagram.png" alt="Instagram"></li>
 			</ul>
 		</nav>
@@ -38,9 +61,11 @@
 			</figure>
 			<article>
 				<h2>Designer d'espace</h2>
-				<p>Je raconte votre histoire, je valorise vos idées. Je vous accompagne de la conception à la livraison
+				<p>Je raconte votre histoire, je valorise vos idées. Je vous accompagne de la conception à la
+					livraison
 					finale du chantier.</p>
-				<p>Chaque projet sera étudié en commun, de façon à mettre en valeur les volumes, les matières et les
+				<p>Chaque projet sera étudié en commun, de façon à mettre en valeur les volumes, les matières et
+					les
 					couleurs dans le respect de l’esprit des lieux et le choix adapté des matériaux. Le suivi du
 					chantier sera assuré dans le souci du détail, le respect du planning et du budget.</p>
 				<p>En cas de besoin, une équipe pluridisciplinaire peut-être constituée : architecte DPLG,
@@ -64,7 +89,7 @@
 		<section id="contact">
 			<h2>Contact</h2>
 			<p>Vous avez un projet ? Discutons-en !</p>
-			<form action="#" method="post">
+			<form id="sendContact" action="#" method="post">
 				<label for="name">Nom</label>
 				<input type="text" name="name" id="name">
 				<label for="email">Email</label>

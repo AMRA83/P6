@@ -7,7 +7,7 @@ async function getWorks() {
         console.error(error);
     }
 }
-getWorks();
+
 async function displayWorks() {
     const gallery = document.querySelector('.gallery');
     const works = await getWorks();
@@ -38,7 +38,7 @@ async function getCategories() {
         console.error(error);
     }
 }
-getCategories();
+
 async function filtre() {
     const filtres = document.querySelector('.filtres');
     const categories = await getCategories();
@@ -96,40 +96,39 @@ function tabsFilter() {
     });
 }
 
-filtre();
+
 
 
 
 /*Cette fonction va permettre de modifier le "login" et le "logout" ainsi que le bouton "modifier".*/
-function logOut() {
-    const containerAdmin = document.getElementById('admin')
-    const buttonModifier = document.querySelector('.modification_icon');
-    const login = document.getElementById('login');
-    const logout = document.getElementById('logout');
-    const token = sessionStorage.getItem('token');
-    const filtres = document.querySelector('.filtres');
-    /*Si nous avons le token alors on change le "login" en "logout" et nous pouvons afficher le button modifier*/
-    if (token) {
-        containerAdmin.classList.remove('hide');
-        login.classList.add('hide');
-        logout.classList.remove('hide');
-        buttonModifier.classList.remove('hide');
-        filtres.classList.add('hide')
 
-        /*Si nous cliquons sur le bouton logout alors on enlève le token on change le "logout" en "login" et on enlève le bouton modifier */
-        logout.addEventListener('click', () => {
-            containerAdmin.classList.add('hide');
-            sessionStorage.removeItem('token');
-            login.classList.remove('hide');
-            logout.classList.add('hide');
-            buttonModifier.classList.add('hide');
-            filtre();
+const containerAdmin = document.getElementById('admin')
+const buttonModifier = document.querySelector('.modification_icon');
+const login = document.getElementById('login');
+const token = sessionStorage.getItem('token');
+const filtres = document.querySelector('.filtres');
 
-        })
-    }
+/*Si nous avons le token alors on change le "login" en "logout" et nous pouvons afficher le button modifier*/
+if (token) {
+    containerAdmin.classList.remove('hide');
+    buttonModifier.classList.remove('hide');
+    filtres.classList.add('hide')
+    login.innerText = "logout";
+    /*Si nous cliquons sur le bouton logout alors on enlève le token on change le "logout" en "login" et on enlève le bouton modifier */
+    login.addEventListener('click', () => {
+        containerAdmin.classList.add('hide');
+        sessionStorage.removeItem('token');
+        buttonModifier.classList.add('hide');
+        filtres.classList.remove('hide')
+        login.innerText = "login";
+        filtre();
 
+    })
+} else {
+    filtre();
 }
-logOut();
+
+
 
 
 /*MODAL*/
@@ -167,20 +166,14 @@ async function addWorksModale() {
         const iconDelete = document.createElement("img");
         iconDelete.src = "./assets/icons/delete_icon.jpg";
         iconDelete.classList.add('icon_delete');
+        iconDelete.addEventListener('click', function () {
+            // Supprimer l'élément parent de l'icône de suppression (c'est-à-dire l'élément contenant l'image)
+            ImageModal.remove();
+        });
         modalGallery.appendChild(ImageModal);
         ImageModal.appendChild(iconDelete);
 
     });
 }
 addWorksModale()
-/*Pour supprimer une image de la modale*/
-const iconsDelete = document.querySelectorAll('.icon_delete');
-iconsDelete.forEach(iconDelete => {
-
-    iconDelete.addEventListener('click', () => {
-        let dataId = iconDelete.parentNode.dataset.id;
-        console.log(dataId);
-        deleteWork(dataId);
-    });
-});
 

@@ -166,14 +166,44 @@ async function addWorksModale() {
         const iconDelete = document.createElement("img");
         iconDelete.src = "./assets/icons/delete_icon.jpg";
         iconDelete.classList.add('icon_delete');
-        iconDelete.addEventListener('click', function () {
-            // Supprimer l'élément parent de l'icône de suppression (c'est-à-dire l'élément contenant l'image)
-            ImageModal.remove();
-        });
+
+
         modalGallery.appendChild(ImageModal);
         ImageModal.appendChild(iconDelete);
 
     });
+    /*Pour supprimer une image de la modale*/
+    const iconsDelete = document.querySelectorAll('.icon_delete');
+
+    iconsDelete.forEach(iconDelete => {
+
+        iconDelete.addEventListener('click', () => {
+            let dataId = iconDelete.parentNode.dataset.id;
+            console.log(dataId);
+            deleteWork(dataId);
+        });
+    })
 }
 addWorksModale()
 
+async function deleteWork(id) {
+    const token = sessionStorage.getItem('token');
+    const deleterequest = await fetch("http://localhost:5678/api/works/" + id, {
+        method: 'DELETE',
+        headers: {
+            'Authorization': `Bearer ${token}`
+        }
+    });
+    if (deleterequest.ok) {
+        const deletedWork = document.querySelectorAll(`[data-id="${id}"]`);
+        //Supprime l'élément de la modale
+        if (deletedWork && deletedWork.length > 0) {
+            for (var i = 0; i < deletedWork.length; i++) {
+                deletedWork[i].remove();
+            }
+        }
+    }
+    else {
+        alert('Une erreur est survenue');
+    }
+}

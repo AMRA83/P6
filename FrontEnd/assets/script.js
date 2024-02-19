@@ -207,3 +207,169 @@ async function deleteWork(id) {
         alert('Une erreur est survenue');
     }
 }
+const buttonOpenModal2 = document.querySelector('.modal_button');
+buttonOpenModal2.addEventListener("click", function () {
+    modaleAddContainer.classList.remove('hide');
+});
+
+const buttonCloseModal2 = document.querySelector('.icon_close');
+
+const modaleAddContainer = document.querySelector('.modaleAdd_container');
+
+const overlayClose2 = document.querySelector('.modale2_overlay');
+const arrowModale = document.querySelector('.arrow');
+
+const buttonValider = document.querySelector("#button_submit");
+const addTitle = document.querySelector("#title");
+var fileBoolean = false;
+var nameBoolean = false;
+
+/*Permet de fermer la modale en cliquant en dehors de la modale*/
+overlayClose2.addEventListener('click', () => {
+    modaleAddContainer.style.display = "none";
+});
+
+/*La flêche va permettre de me rediriger vers la première modale*/
+arrowModale.addEventListener('click', () => {
+    modaleAddContainer.style.display = "none";
+
+});
+
+/**
+ * Permet d'afficher l'explorateur de fichier
+ * On ajoute la fonction PreviewPictures pour pouvoir afficher la photo selectionner
+ */
+const addPictures = document.querySelector(".addPictures"); // Ajout de la sélection de l'élément
+addPictures.addEventListener("change", function (event) {
+    previewPictures(event);
+});
+
+/**
+ * Si il y a quelque chose dans le champ "titre" alors on passe à true
+ * On regarde si les autres autres champs sont à true avec la function checkFromBoolean*/
+addTitle.addEventListener("keyup", function (event) {
+    nameBoolean = false;
+    if (addTitle.value && addTitle.value.length > 0) {
+        nameBoolean = true;
+    }
+    checkFormBoolean();
+});
+
+/*Preview de photo selectionnée dans la deuxième modale*/
+function previewPictures(e) {
+    const file = e.target.files[0];
+    if (file.type.match("image.*")) {
+        if (file.size <= 4194304) {
+            var reader = new FileReader();
+
+            /*Une fois la photo selectionner les elements seront caché grace a un display none*/
+            reader.onload = function (e) {
+                imagePreview.src = e.target.result;
+                document.getElementById("imageModale").style.display = "none";
+                document.getElementById("imagePreview").style.display = "block";
+                document.getElementById("input_image_container").style.display = "none";
+
+                fileBoolean = true;
+                checkFormBoolean();
+            };
+            reader.readAsDataURL(file);
+        } else {
+            alert('Votre image ne doit pas dépasser les 4MO.');
+        }
+    }
+}
+
+/*Cette function permet d'ajouter une class sur le bouton valider en vert si le nom et la photo est choisie*/
+function checkFormBoolean() {
+    if (fileBoolean && nameBoolean) {
+        buttonValider.removeAttribute("disabled");
+        buttonValider.classList.add('modale_green');
+    } else {
+        buttonValider.setAttribute("disabled", "disabled");
+        buttonValider.classList.remove("modale_green");
+    }
+}
+
+async function createCategories() {
+    const select = document.getElementById("categorie");
+    const categories = await getCategories();
+
+    /**
+     * Cette boucle va permettre d'ajouter les categories dans les balises "option" grace a l'appel API "getCategories".
+     * Dans les balises "option" on a le nom et l'id de la category seul le nom sera afficher grace à "textContent".
+     * Les options seront afficher dans la balise "select".
+     */
+    categories.forEach((category) => {
+        const option = document.createElement("option");
+        option.value = category.id;
+        option.textContent = category.name;
+        select.appendChild(option);
+    });
+}
+createCategories();
+
+/**
+ * Cette function va permettre d'envoyer ce qu'il y a dans le FromData, si il y a le token alors je peux réaliser la methode POST.
+ * En cas de reussite il y aura un message de reussite.
+ * Autrement il y aura un message d'erreur
+ */
+async function addWork() {  // fonction d'ajout de travaux via le formulaire + appel api
+    const formAddWorkData = document.querySelector('#form-add-work');
+    const formData = new FormData(formAddWorkData);
+
+    const token = sessionStorage.getItem('token');
+    const response = await fetch('http://localhost:5678/api/works', {
+        method: 'POST',
+        headers: {
+            'Authorization': `Bearer ${token}`
+        },
+        body: formData
+    });
+    /* Envoie d'un message si la réponse est ok*/
+    if (response.ok) {
+        alert("Votre image à bien été ajoutée!")
+        return true;
+    }
+    /*Message d'alert en cas d'une erreur*/
+    else {
+        alert('Une erreur est survenue')
+    }
+    return response;
+}
+
+function initModal() {
+    addWorksModale();
+    createCategories();
+}
+
+const titleForm = document.querySelector("#form-add-work");
+
+titleForm.addEventListener('submit', addPicturesModal); // Modification de la fonction à appeler
+
+async function addPicturesModal(event) {
+    event.preventDefault();
+
+    const workAdded = await addWork();
+    if (workAdded) {
+        /*Cette boucle va permettre de vider la gallery présente dans la gallery sur les balises "figure"*/
+        const gallery = document.querySelector(".gallery");
+
+        const galleryElem = gallery.querySelectorAll('figure');
+        if (galleryElem && galleryElem.length > 0) {
+            for (var i = 0; i < galleryElem.length; i++) {
+                galleryElem[i].remove();
+            }
+        }
+        /**Ensuite on appel la fonction suivante afin de recuperer les images et ajouter l'image envoyer*/
+        displayWorks();
+        /*Cette boucle va permettre de vider la gallery présente dans la modale*/
+        const workModalGalleryChildren = document.querySelectorAll(".position_image");
+        if (workModalGalleryChildren && workModalGalleryChildren.length > 0) {
+            for (var i = 0; i < workModalGalleryChildren.length; i++) {
+                workModalGalleryChildren[i].remove();
+            }
+        }
+        /**Ensuite on appel la fonction suivante afin de recuperer les images et ajouter l'image envoyer */
+        addWorksModale();
+    }
+}

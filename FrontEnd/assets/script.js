@@ -172,6 +172,8 @@ async function addWorksModale() {
         ImageModal.appendChild(iconDelete);
 
     });
+
+
     /*Pour supprimer une image de la modale*/
     const iconsDelete = document.querySelectorAll('.icon_delete');
 
@@ -195,26 +197,32 @@ async function deleteWork(id) {
         }
     });
     if (deleterequest.ok) {
-        const deletedWork = document.querySelectorAll(`[data-id="${id}"]`);
+        const deletedWork = document.querySelector(`[data-id="${id}"]`);
         //Supprime l'élément de la modale
-        if (deletedWork && deletedWork.length > 0) {
-            for (var i = 0; i < deletedWork.length; i++) {
-                deletedWork[i].remove();
-            }
+        if (deletedWork) {
+            deletedWork.remove();
+
         }
     }
     else {
         alert('Une erreur est survenue');
     }
 }
+
+const modaleAddContainer = document.querySelector('.modaleAdd_container');
 const buttonOpenModal2 = document.querySelector('.modal_button');
 buttonOpenModal2.addEventListener("click", function () {
     modaleAddContainer.classList.remove('hide');
+
 });
 
-const buttonCloseModal2 = document.querySelector('.icon_close');
+const buttonCloseModal2 = document.getElementById('icon_close');
 
-const modaleAddContainer = document.querySelector('.modaleAdd_container');
+buttonCloseModal2.addEventListener("click", function () {
+    modaleAddContainer.classList.add('hide')
+}
+
+)
 
 const overlayClose2 = document.querySelector('.modale2_overlay');
 const arrowModale = document.querySelector('.arrow');
@@ -226,12 +234,11 @@ var nameBoolean = false;
 
 /*Permet de fermer la modale en cliquant en dehors de la modale*/
 overlayClose2.addEventListener('click', () => {
-    modaleAddContainer.style.display = "none";
-});
-
+    modaleAddContainer.classList.add('hide');
+})
 /*La flêche va permettre de me rediriger vers la première modale*/
 arrowModale.addEventListener('click', () => {
-    modaleAddContainer.style.display = "none";
+    modaleAddContainer.classList.add('hide');
 
 });
 
@@ -337,14 +344,11 @@ async function addWork() {  // fonction d'ajout de travaux via le formulaire + a
     return response;
 }
 
-function initModal() {
-    addWorksModale();
-    createCategories();
-}
 
-const titleForm = document.querySelector("#form-add-work");
 
-titleForm.addEventListener('submit', addPicturesModal); // Modification de la fonction à appeler
+const titleForm = document.getElementById('form-add-work');
+
+titleForm.addEventListener('submit', addPicturesModal);
 
 async function addPicturesModal(event) {
     event.preventDefault();
@@ -355,6 +359,15 @@ async function addPicturesModal(event) {
         const gallery = document.querySelector(".gallery");
 
         const galleryElem = gallery.querySelectorAll('figure');
+        if (workAdded) {
+
+            // Masquer la deuxième modale et afficher à nouveau la première modale
+            modaleAddContainer.classList.add('hide');
+            modaleContainer.classList.remove('hide');
+            // Réinitialiser le formulaire
+            document.getElementById('form-add-work').reset();
+        }
+
         if (galleryElem && galleryElem.length > 0) {
             for (var i = 0; i < galleryElem.length; i++) {
                 galleryElem[i].remove();

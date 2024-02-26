@@ -114,6 +114,8 @@ if (token) {
     buttonModifier.classList.remove('hide');
     filtres.classList.add('hide')
     login.innerText = "logout";
+    createCategories();
+    addWorksModale();
     /*Si nous cliquons sur le bouton logout alors on enlève le token on change le "logout" en "login" et on enlève le bouton modifier */
     login.addEventListener('click', () => {
         containerAdmin.classList.add('hide');
@@ -186,28 +188,36 @@ async function addWorksModale() {
         });
     })
 }
-addWorksModale()
+
 
 async function deleteWork(id) {
-    const token = sessionStorage.getItem('token');
-    const deleterequest = await fetch("http://localhost:5678/api/works/" + id, {
-        method: 'DELETE',
-        headers: {
-            'Authorization': `Bearer ${token}`
-        }
-    });
-    if (deleterequest.ok) {
-        const deletedWork = document.querySelector(`[data-id="${id}"]`);
-        //Supprime l'élément de la modale
-        if (deletedWork) {
-            deletedWork.remove();
+    // Demande de confirmation à l'utilisateur
+    const confirmDelete = confirm("Êtes-vous sûr de vouloir supprimer cette image ?");
 
+    // Si l'utilisateur confirme la suppression
+    if (confirmDelete) {
+        const token = sessionStorage.getItem('token');
+        const deleterequest = await fetch("http://localhost:5678/api/works/" + id, {
+            method: 'DELETE',
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
+
+        // Vérifie si la suppression s'est bien déroulée
+        if (deleterequest.ok) {
+            const deletedWork = document.querySelector(`[data-id="${id}"]`);
+            //Supprime l'élément de la modale
+            if (deletedWork) {
+                deletedWork.remove();
+            }
+        } else {
+            alert('Une erreur est survenue lors de la suppression');
         }
-    }
-    else {
-        alert('Une erreur est survenue');
     }
 }
+
+/*MODAL2*/
 
 const modaleAddContainer = document.querySelector('.modaleAdd_container');
 const buttonOpenModal2 = document.querySelector('.modal_button');
@@ -220,6 +230,7 @@ const buttonCloseModal2 = document.getElementById('icon_close');
 
 buttonCloseModal2.addEventListener("click", function () {
     modaleAddContainer.classList.add('hide')
+    resetForm();
 }
 
 )
@@ -235,11 +246,12 @@ var nameBoolean = false;
 /*Permet de fermer la modale en cliquant en dehors de la modale*/
 overlayClose2.addEventListener('click', () => {
     modaleAddContainer.classList.add('hide');
+    resetForm();
 })
 /*La flêche va permettre de me rediriger vers la première modale*/
 arrowModale.addEventListener('click', () => {
     modaleAddContainer.classList.add('hide');
-
+    resetForm();
 });
 
 /**
@@ -254,7 +266,8 @@ addPictures.addEventListener("change", function (event) {
 /**
  * Si il y a quelque chose dans le champ "titre" alors on passe à true
  * On regarde si les autres autres champs sont à true avec la function checkFromBoolean*/
-addTitle.addEventListener("keyup", function (event) {
+addTitle.addEventListener("keyup", function () {
+
     nameBoolean = false;
     if (addTitle.value && addTitle.value.length > 0) {
         nameBoolean = true;
@@ -297,13 +310,15 @@ function checkFormBoolean() {
     }
 }
 
+
+
 async function createCategories() {
     const select = document.getElementById("categorie");
     const categories = await getCategories();
 
     /**
      * Cette boucle va permettre d'ajouter les categories dans les balises "option" grace a l'appel API "getCategories".
-     * Dans les balises "option" on a le nom et l'id de la category seul le nom sera afficher grace à "textContent".
+     * Dans les balises "option" on a le nom et l'id de la category seul le nom sera afficher grace à "textContent".k
      * Les options seront afficher dans la balise "select".
      */
     categories.forEach((category) => {
@@ -313,7 +328,7 @@ async function createCategories() {
         select.appendChild(option);
     });
 }
-createCategories();
+
 
 /**
  * Cette function va permettre d'envoyer ce qu'il y a dans le FromData, si il y a le token alors je peux réaliser la methode POST.
@@ -321,7 +336,7 @@ createCategories();
  * Autrement il y aura un message d'erreur
  */
 async function addWork() {  // fonction d'ajout de travaux via le formulaire + appel api
-    const formAddWorkData = document.querySelector('#form-add-work');
+    const formAddWorkData = document.getElementById('form-add-work');
     const formData = new FormData(formAddWorkData);
 
     const token = sessionStorage.getItem('token');
@@ -344,28 +359,41 @@ async function addWork() {  // fonction d'ajout de travaux via le formulaire + a
     return response;
 }
 
-
-
 const titleForm = document.getElementById('form-add-work');
 
 titleForm.addEventListener('submit', addPicturesModal);
 
+
+// Fonction pour réinitialiser le formulaire
+function resetForm() {
+    document.getElementById('form-add-work').reset();
+    // Réinitialiser les variables de contrôle de validation
+    fileBoolean = false;
+    nameBoolean = false;
+    document.getElementById("imageModale").style.display = "block";
+    document.getElementById("imagePreview").style.display = "none";
+    document.getElementById("input_image_container").style.display = "block";
+
+    checkFormBoolean(); // Appeler la fonction pour mettre à jour l'état du bouton Valider
+}
+
+
 async function addPicturesModal(event) {
     event.preventDefault();
 
-    const workAdded = await addWork();
-    if (workAdded) {
+    const workAdd = await addWork();
+    if (workAdd) {
         /*Cette boucle va permettre de vider la gallery présente dans la gallery sur les balises "figure"*/
         const gallery = document.querySelector(".gallery");
 
         const galleryElem = gallery.querySelectorAll('figure');
-        if (workAdded) {
-
+        if (workAdd) {
+            // Réinitialiser le formulaire
+            resetForm();
             // Masquer la deuxième modale et afficher à nouveau la première modale
             modaleAddContainer.classList.add('hide');
             modaleContainer.classList.remove('hide');
-            // Réinitialiser le formulaire
-            document.getElementById('form-add-work').reset();
+
         }
 
         if (galleryElem && galleryElem.length > 0) {
@@ -373,7 +401,7 @@ async function addPicturesModal(event) {
                 galleryElem[i].remove();
             }
         }
-        /**Ensuite on appel la fonction suivante afin de recuperer les images et ajouter l'image envoyer*/
+        /**Ensuite on appel la fonction suivante afin de recuperer les images */
         displayWorks();
         /*Cette boucle va permettre de vider la gallery présente dans la modale*/
         const workModalGalleryChildren = document.querySelectorAll(".position_image");
@@ -386,3 +414,5 @@ async function addPicturesModal(event) {
         addWorksModale();
     }
 }
+
+

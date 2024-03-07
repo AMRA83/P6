@@ -43,7 +43,6 @@ async function loginForm(user) {
     return fetchLogin(type, options);
 }
 
-
 /* Afficher les messages d'erreurs Email - PassWord */
 function addError(errorType) {
     var type = errorType;

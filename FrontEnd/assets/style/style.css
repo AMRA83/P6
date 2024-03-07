@@ -467,11 +467,10 @@ dialog {
 
 
 .icon_close_position {
-	display: flex;
-	justify-content: flex-end;
+	margin-left: 620px;
 }
 
-.icon_close {
+#close_modale {
 	width: 24px;
 	cursor: pointer;
 	color: #000;
@@ -560,10 +559,16 @@ dialog p {
 .icon_close__flêche_position {
 	display: flex;
 	justify-content: space-between;
+
 }
 
 .arrow {
 	cursor: pointer;
+	color: #000;
+}
+
+.fa-solid {
+	color: #000;
 }
 
 #form-add-work select {

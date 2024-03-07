@@ -29,6 +29,7 @@ async function displayWorks() {
     });
 }
 displayWorks();
+
 async function getCategories() {
     try {
         const response = await fetch('http://localhost:5678/api/categories');
@@ -98,8 +99,6 @@ function tabsFilter() {
 
 
 
-
-
 /*Cette fonction va permettre de modifier le "login" et le "logout" ainsi que le bouton "modifier".*/
 
 const containerAdmin = document.getElementById('admin')
@@ -148,7 +147,12 @@ buttonOpenModal.addEventListener("click", function () {
 buttonCloseModal.addEventListener("click", function () {
     modaleContainer.classList.add('hide')
 });
-
+/*Permet de fermer la modale en cliquant en dehors de la modale*/
+const overlayClose = document.querySelector('.modale_overlay');
+overlayClose.addEventListener('click', () => {
+    modaleContainer.classList.add('hide');
+    resetForm();
+})
 const modalGallery = document.querySelector('.modal_gallery')
 
 /* Ajout des images dans la modale* en recuperant la fonction getWorks*/
@@ -169,51 +173,44 @@ async function addWorksModale() {
         iconDelete.src = "./assets/icons/delete_icon.jpg";
         iconDelete.classList.add('icon_delete');
 
-
         modalGallery.appendChild(ImageModal);
         ImageModal.appendChild(iconDelete);
 
-    });
-
-
-    /*Pour supprimer une image de la modale*/
-    const iconsDelete = document.querySelectorAll('.icon_delete');
-
-    iconsDelete.forEach(iconDelete => {
+        // Ajouter un écouteur d'événement pour chaque icône de suppression
 
         iconDelete.addEventListener('click', () => {
-            let dataId = iconDelete.parentNode.dataset.id;
-            console.log(dataId);
-            deleteWork(dataId);
+            const confirmDelete = confirm("Êtes-vous sûr de vouloir supprimer cette image ?");
+            if (confirmDelete) {
+                const dataId = ImageModal.dataset.id;
+                deleteWork(dataId);
+            }
         });
-    })
+    });
 }
 
-
 async function deleteWork(id) {
-    // Demande de confirmation à l'utilisateur
-    const confirmDelete = confirm("Êtes-vous sûr de vouloir supprimer cette image ?");
 
-    // Si l'utilisateur confirme la suppression
-    if (confirmDelete) {
-        const token = sessionStorage.getItem('token');
-        const deleterequest = await fetch("http://localhost:5678/api/works/" + id, {
-            method: 'DELETE',
-            headers: {
-                'Authorization': `Bearer ${token}`
-            }
-        });
 
-        // Vérifie si la suppression s'est bien déroulée
-        if (deleterequest.ok) {
-            const deletedWork = document.querySelector(`[data-id="${id}"]`);
-            //Supprime l'élément de la modale
-            if (deletedWork) {
-                deletedWork.remove();
-            }
-        } else {
-            alert('Une erreur est survenue lors de la suppression');
+    // Envoyer une requête de suppression au serveur
+    const token = sessionStorage.getItem('token');
+    const deleterequest = await fetch("http://localhost:5678/api/works/" + id, {
+        method: 'DELETE',
+        headers: {
+            'Authorization': `Bearer ${token}`
         }
+    });
+
+    // Vérifier si la suppression s'est bien déroulée
+    if (deleterequest.ok) {
+        // Supprimer l'élément de la modale
+        const deletedImageModal = document.querySelector(`[data-id="${id}"]`);
+        if (deletedImageModal) {
+            deletedImageModal.remove();
+        }
+        // Supprimer l'élément de la page principale
+        const imagePage = document.querySelector(`[data-id="${id}"]`);
+        imagePage.classList.add('hide')
+
     }
 }
 
